@@ -39,7 +39,7 @@ START_MARKER = "# [TRUSTED HASHES] #"
 END_MARKER   = "# [TRUSTED HASHES END] #"  
 
 def service():
-    start_service = "[Unit]\nDescription=Start\nBefore=display-manager.service\nBefore=gdm.service\nBefore=graphical.target\nAfter=local-fs.target\n\n[Service]\nExecStart=python3 /root/auditor.py\nType=oneshot\nRemainAfterExit=yes\nStandardOutput=tty\nStandardError=tty\nTTYPath=/dev/tty1\nExecStartPost=/bin/bash -c 'read -r -s -p "" </dev/tty1 >/dev/tty1 2>&1 || true'\nTimeoutSec=0\n\n[Install]\nWantedBy=multi-user.target"
+    start_service = "[Unit]\nDescription=Start\nBefore=display-manager.service\nBefore=lightdm.service\nBefore=graphical.target\nAfter=local-fs.target\n\n[Service]\nExecStart=python3 /root/auditor.py\nType=oneshot\nRemainAfterExit=yes\nStandardOutput=tty\nStandardError=tty\nStandardInput=tty\nTTYPath=/dev/tty1\nTimeoutSec=0\n\n[Install]\nWantedBy=multi-user.target"
     login_auditor_service = '/etc/systemd/system/login-auditor.service'
     if os.path.exists(login_auditor_service):
         print("[*]Login auditor service exists.")
@@ -170,7 +170,7 @@ def main():
         print("\nScript updated.")
 
     print("SYSTEM CLEAN\nNO FILE TAMPERED DETECTED")
-    time.sleep(30)
+    time.sleep(15)
     print('\n' * 50)
 
 if __name__ == "__main__":
