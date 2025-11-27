@@ -5,6 +5,7 @@ import os
 import sys
 from pathlib import Path
 from datetime import datetime
+import time
 
 SYSTEM_DRIVE_CHECK = [
     Path("/bin"),
@@ -23,6 +24,8 @@ SYSTEM_DRIVE_CHECK = [
     Path("/proc"),
     Path("/root"),
     Path("/run"),
+    Path("/test"),
+    Path("/test5"),
 ]
 
 PATHS_TO_CHECK = [
@@ -32,7 +35,7 @@ PATHS_TO_CHECK = [
 ]
 
 SCRIPT = Path(__file__)
-START_MARKER = "# [TRUSTED HASHES] #"
+START_MARKER = "# [TRUSTED HASHES] #"
 END_MARKER   = "# [TRUSTED HASHES END] #"  
 
 def service():
@@ -93,11 +96,10 @@ def save_trusted(trusted):
                 "".join(lines) + \
                 END_MARKER + "\n"
     SCRIPT.write_text(before + new_block + after, encoding="utf-8")
-#    os.chmod(SCRIPT, 0o700)
 
 def menu(file, old, new):
     while True:
-        print("[!] POSSIBLE FILE TAMPERED [!]")
+        print("[!] POSSIBLE FILE TAMPERED [!]")
         print(f"[*] File : {file}")
         print(f"[*] Old hash  : {old or '(none)'}")
         print(f"[*] New hash  : {new}")
@@ -111,19 +113,23 @@ def menu(file, old, new):
         if choice in ("3", "q", "quit", "exit"): sys.exit("Bye")
 
 def main():
+    print('\n' * 50)
     if os.geteuid() != 0:
         sys.exit("Run with sudo!")
-    if os.getcwd() != '/root':
-        print("[!] These script needs to be run on the '/root/' directory.")
-        sys.exit("Bye")
     service()
     current = {}
+    print("STARTING TO CHECK THE SYSTEM DRIVE DIRECTORY")
     for drive in SYSTEM_DRIVE_CHECK:
       if os.path.exists(drive):
-        print(f'{drive} exists')
+        print(f"[*] The system drive directory '{drive}' exists.")
       else:
-        print("not exists")
-      
+        print(f"[!] The system drive directory '{drive}' does not exists.")
+        print("1] Continue. ")
+        print("2] Quit. ")
+        system_drive_choice = input("\nChoice [1-2]: ").strip()
+        if system_drive_choice == "1": continue
+        if system_drive_choice in ("2", "q", "quit", "exit"): sys.exit("Bye")
+
     for base in PATHS_TO_CHECK:
         if base.exists():
             for f in base.rglob("*"):
@@ -134,6 +140,9 @@ def main():
     print(f"Scanned {len(current)} files")  
     trusted = load_trusted()
     if not trusted:
+        if os.getcwd() != '/root':
+            print("[!] These script needs to be run on the '/root/' directory.")
+            sys.exit("Bye")
         print("\nFirst run: Scanning and loading all the hash.")
         save_trusted(current)
         return
@@ -160,12 +169,14 @@ def main():
         save_trusted(trusted)
         print("\nScript updated.")
 
-    print("SYSTEM CLEAN – EVERYTHING OK")
+    print("SYSTEM CLEAN\nNO FILE TAMPERED DETECTED")
+    time.sleep(30)
+    print('\n' * 50)
 
 if __name__ == "__main__":
     main()
 
 """
-# [TRUSTED HASHES] #
+# [TRUSTED HASHES] #
 # [TRUSTED HASHES END] #
 """
