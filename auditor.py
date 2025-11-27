@@ -9,23 +9,25 @@ import time
 
 SYSTEM_DRIVE_CHECK = [
     Path("/bin"),
-    Path("/sbin"),
     Path("/boot"),
     Path("/dev"),
     Path("/etc"),
+    #Path("/home"),
     Path("/lib"),
+    Path("/lib64"),
+    Path("/lost+found"),
     Path("/media"),
     Path("/mnt"),
     Path("/opt"),
-    Path("/var"),
-    Path("/usr"),
-    Path("/tmp"),
-    Path("/sys"),
     Path("/proc"),
     Path("/root"),
     Path("/run"),
-    Path("/test"),
-    Path("/test5"),
+    Path("/sbin"),
+    Path("/srv"),
+    Path("/sys"),
+    Path("/tmp"),
+    Path("/usr"),
+    Path("/var"),
 ]
 
 PATHS_TO_CHECK = [
